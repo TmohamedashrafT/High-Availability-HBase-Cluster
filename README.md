@@ -64,9 +64,7 @@ This project sets up a **highly available (HA)** Hadoop + HBase cluster using Do
 
 ## 🔄 Failover Behavior
 
-### 🔸 HMaster Failover
-
-## 🛡️ HMaster Failover
+### 🛡️ HMaster Failover
 
 HBase is designed with high availability in mind. Only **one HMaster is active** at a time; the others remain in **standby mode**.
 
@@ -86,6 +84,64 @@ You can verify the failover by:
      hbase shell
      status 'datailed'
    ```
+## 📸 Screenshots
+### Before Failover:
+![image](https://github.com/TmohamedashrafT/High-Availability-HBase-Cluster/blob/main/readme_image/Before_Failover.png)
+### hmaster2 is active; hmaster1 is standby.
+
+### After Failover (hmaster1 stopped)
+![image](https://github.com/TmohamedashrafT/High-Availability-HBase-Cluster/blob/main/readme_image/After_Failover.png)
+### hmaster1 becomes the active master.
+
+### 📦 RegionServer Failover
+
+HBase data is divided into **Regions**, which are managed by **RegionServers**. HBase supports automatic recovery when a RegionServer fails.
+
+#### 🔁 How Region Failover Works
+
+1. **Failure Detection**:  
+   - When a RegionServer fails, its regions are marked as **unassigned**.
+   
+2. **Recovery Process**:  
+  -  When a RegionServer fails, its regions are marked unassigned.
+  -  The active HMaster detects the failure and reassigns the regions to healthy RegionServers.
+  -  When the failed RegionServer is restarted, HBase can rebalance the regions automatically. 
+
+---
+
+#### 🧪 Verifying Region Failover
+
+### Before Failure
+- Both RegionServers are **active** and running.  
+- Regions are **evenly distributed** across them.  
+
+### After Failure
+- The failed RegionServer is marked as **dead**.  
+- Its regions are **reassigned** to the remaining healthy RegionServer.  
+
+### After Recovery and Load Balancing
+- Restart the failed RegionServer:
+- HBase rebalances and redistributes some regions back to it.
+
+## 📸 Screenshots
+### Before RegionServer Failure
+![image](https://github.com/TmohamedashrafT/High-Availability-HBase-Cluster/blob/main/readme_image/RS_Before_Failover.png)
+### Both RegionServers are healthy and balanced.
+
+### After rs_worker1 Fails
+![image](https://github.com/TmohamedashrafT/High-Availability-HBase-Cluster/blob/main/readme_image/RS_After_Failover.png)
+### Regions are reassigned to rs_worker2.
+
+### After Restarting rs_worker1 and Load Balancing
+![image](https://github.com/TmohamedashrafT/High-Availability-HBase-Cluster/blob/main/readme_image/RS_After_load_balancing.png)
+### Some regions are migrated back to rs_worker1.
+
+
+
+
+
+
+
 
 
 
