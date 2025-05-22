@@ -19,7 +19,6 @@ This project sets up a **highly available (HA)** Hadoop + HBase cluster using Do
 - **Hadoop 3.3.6**
 - **ZooKeeper 3.8.4**
 - **Java 8**
-- Configured user: `hadoop` with passwordless sudo
 - Hadoop and ZooKeeper are placed under `/home/hadoop/packages/`
 
 ### 🔧 HBase Extension Image
