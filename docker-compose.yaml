@@ -1,0 +1,118 @@
+services:
+  master1:
+    build: 
+      context: .
+      target: hadoop
+    container_name: master1
+    hostname: master1
+    ports:
+      - "9871:9870"
+      - "8071:8088"
+    volumes:
+      - ./main:/home/hadoop/main
+    networks:
+      - hadoopnet
+    healthcheck:
+      test: ["CMD", "bash", "-c", "(hdfs haadmin -getAllServiceState | grep -Eq 'active|standby') && (yarn rmadmin -getAllServiceState | grep -Eq 'active|standby')"]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+      timeout: 5s
+
+  master2:
+    build: 
+      context: .
+      target: hadoop
+    container_name: master2
+    hostname: master2
+    ports:
+      - "9872:9870"
+      - "8072:8088"
+    volumes:
+      - ./main:/home/hadoop/main
+    networks:
+      - hadoopnet
+
+  master3:
+    build: 
+      context: .
+      target: hadoop
+    container_name: master3
+    hostname: master3
+    ports:
+      - "9873:9870"
+      - "8073:8088"
+    volumes:
+      - ./main:/home/hadoop/main
+    networks:
+      - hadoopnet
+
+  hmaster1:
+    build: 
+      context: .
+      target: hadoop_hbase
+    container_name: hmaster1
+    hostname: hmaster1
+    ports:
+      - "16001:16000"  
+      - "16011:16010" 
+    networks:
+      - hadoopnet
+    depends_on:
+      master1:
+        condition: service_healthy
+
+
+  hmaster2: 
+    build: 
+      context: .
+      target: hadoop_hbase
+    container_name: hmaster2
+    hostname: hmaster2
+    ports:
+      - "16002:16000"  
+      - "16012:16010" 
+    networks:
+      - hadoopnet
+    depends_on:
+      master1:
+        condition: service_healthy
+   
+  rs_worker1:
+    build: 
+      context: .
+      target: hadoop_hbase
+    image: hadoop_hbase
+    hostname: rs_worker1
+    container_name: rs_worker1
+    volumes:
+      - rs_worker1_data:/home/hadoop/hadoop/datanode  
+    networks:
+      - hadoopnet
+    depends_on:
+      - hmaster1
+
+  rs_worker2:
+    build: 
+      context: .
+      target: hadoop_hbase
+    hostname: rs_worker2
+    container_name: rs_worker2
+    volumes:
+      - rs_worker2_data:/home/hadoop/hadoop/datanode  
+    networks:
+      - hadoopnet
+    depends_on:
+      - hmaster1
+ 
+  
+
+volumes:
+  db_data:
+  rs_worker1_data:  
+  rs_worker2_data:  
+
+
+networks:
+  hadoopnet:
+    name: hadoopnet
